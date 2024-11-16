@@ -25,7 +25,6 @@ pipeline {
                     // Clean and build the project
                     bat "mvn clean package -f C:\\Users\\Dell-Lap\\Downloads\\simple-springboot-app-master\\simple-springboot-app-master\\pom.xml"
 
-                    
                     // Log the build directory content for debugging
                     bat "dir ${PROJECT_DIR}\\target"
                 }
@@ -37,7 +36,7 @@ pipeline {
                 script {
                     // Find the JAR file in the target directory
                     def jarOutput = bat(
-                        script: "for %i in (${PROJECT_DIR}\\target\\*.jar) do @echo %~nxi",
+                        script: "for %%i in (${PROJECT_DIR}\\target\\*.jar) do @echo %%~nxi",
                         returnStdout: true
                     ).trim()
 
