@@ -23,7 +23,8 @@ pipeline {
             steps {
                 script {
                     // Clean and build the project
-                    bat "mvn clean package -f ${PROJECT_DIR}\\pom.xml"
+                    bat "mvn clean package -f C:\\Users\\Dell-Lap\\Downloads\\simple-springboot-app-master\\simple-springboot-app-master\\pom.xml"
+
                     
                     // Log the build directory content for debugging
                     bat "dir ${PROJECT_DIR}\\target"
