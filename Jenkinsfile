@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         // Define project directory and other environment variables
-        PROJECT_DIR = "C:\\Users\\Dell-Lap\\Downloads\\simple-springboot-app-master\\simple-springboot-app-master\\simple-springboot-app"
+        PROJECT_DIR = "C:\\Users\\Dell-Lap\\Downloads\\simple-springboot-app-master\\simple-springboot-app-master"
         DEPLOY_DIR = "C:\\Users\\Dell-Lap\\Downloads\\Newfolder" // The folder where the JAR will be deployed
     }
 
