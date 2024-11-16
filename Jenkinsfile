@@ -3,9 +3,8 @@ pipeline {
 
     environment {
         // Define project directory and other environment variables
-        PROJECT_DIR = "C:\\Users\\Dell-Lap\\Downloads\\springbootwebapp-master\\springbootwebapp-master"
+        PROJECT_DIR = "C:\\Users\\Dell-Lap\\Downloads\\simple-springboot-app-master\\simple-springboot-app-master\\simple-springboot-app"
         DEPLOY_DIR = "C:\\Users\\Dell-Lap\\Downloads\\Newfolder" // The folder where the JAR will be deployed
-        APP_NAME = "springbootwebapp" // JAR file name (update with the actual name if necessary)
     }
 
     stages {
@@ -32,16 +31,36 @@ pipeline {
             }
         }
 
+        stage('Determine JAR Name') {
+            steps {
+                script {
+                    // Find the JAR file in the target directory
+                    def jarOutput = bat(
+                        script: "for %i in (${PROJECT_DIR}\\target\\*.jar) do @echo %~nxi",
+                        returnStdout: true
+                    ).trim()
+
+                    // Extract the JAR name and define it as an environment variable
+                    def jarFiles = jarOutput.split("\n")
+                    def jarFile = jarFiles.find { it.endsWith('.jar') && !it.contains('.original') }
+                    if (!jarFile) {
+                        error "No JAR file found in target directory!"
+                    }
+                    env.BUILD_JAR = "${PROJECT_DIR}\\target\\${jarFile}"
+                    echo "Discovered JAR file: ${env.BUILD_JAR}"
+                }
+            }
+        }
+
         stage('Deploy') {
             steps {
                 script {
-                    // Define paths for the build artifact and the deployment folder
-                    def buildJar = "C:\\Users\\Dell-Lap\\Downloads\\springbootwebapp-master\\springbootwebapp-master\\target\\spring-boot-web-0.0.1-SNAPSHOT.jar"  // Adjust this to the correct JAR name
-                    def deployJar = "C:\\Users\\Dell-Lap\\Downloads\\Newfolder\\spring-boot-web-0.0.1-SNAPSHOT.jar"  // Define where to deploy the JAR
+                    // Define the deployment path for the JAR
+                    def deployJar = "${DEPLOY_DIR}\\${env.BUILD_JAR.split('\\\\').last()}" // Extract the JAR name from the full path
 
                     // Verify if the built JAR exists
                     bat """
-                    if not exist "${buildJar}" (
+                    if not exist "${env.BUILD_JAR}" (
                         echo Build artifact not found! && exit 1
                     )
                     """
@@ -54,7 +73,7 @@ pipeline {
                     """
 
                     // Copy the new JAR to the deployment folder
-                    bat "copy /Y \"${buildJar}\" \"${deployJar}\""
+                    bat "copy /Y \"${env.BUILD_JAR}\" \"${deployJar}\""
 
                     // Run the new JAR using Java with specified arguments
                     bat "start java -jar \"${deployJar}\" --spring.profiles.active=prod --server.port=1010"
